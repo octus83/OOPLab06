@@ -4,11 +4,8 @@ import MiniGamePackage.Sprite;
 @SuppressWarnings("serial")
 public class MyMiniGame extends MiniGame
 {
-
     final int NR_OF_FIELDS = 8;
-
-    int[] fieldStatus = new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:
-					       // player
+    int[] fieldStatus = new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:player
 
     Sprite[] fieldSprites = getSprites(0);
     Sprite[] computerStoneSprites = getSprites(3);
@@ -19,11 +16,18 @@ public class MyMiniGame extends MiniGame
 
     int playerPosition = 0;
     int computerPosition = 0;
+    
+    int level;
 
     public MyMiniGame()
     {
-		getBackgroundPicture().paintRectangle(0, 0, 640, 640, -1, 255, 255, 0);
-	
+		initGamePanel();
+    }
+    
+    public void initGamePanel()
+    {
+    	getBackgroundPicture().paintRectangle(0, 0, 640, 640, -1, 122, 122, 122);
+    	
 		fieldSprites[0].paintRectangle(0, 0, 32, 32, -1, 255, 255, 255);
 		fieldSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 0);
 	
@@ -32,12 +36,22 @@ public class MyMiniGame extends MiniGame
 	
 		computerSprite.paintRectangle(5, 0, 22, 32, -1, 0, 0, 255);
 		playerSprite.paintRectangle(5, 0, 22, 32, -1, 255, 128, 0);
-
     }
-
+   
+    public void startGame()
+    {
+    	EndDialog entryDialog = new EndDialog();
+    	
+    	if(entryDialog.submitted)
+    	{
+    		level = entryDialog.selectedDifficulty;
+    		newGame(entryDialog.selectedDifficulty);
+    	}
+    }
+    
     @Override
     protected void initGame()
-    {
+    {	
 		for (int i = 0; i < NR_OF_FIELDS; i++)
 		{
 		    fieldSprites[i].setPosition(304, i * 40 + 100);
@@ -101,7 +115,6 @@ public class MyMiniGame extends MiniGame
 			    fieldStatus[playerPosition] = 2;
 			    playerStoneSprites[playerPosition].show();
 			    computerStoneSprites[playerPosition].dontShow();
-		
 			    break;
 			default:
 			    break;
@@ -112,6 +125,12 @@ public class MyMiniGame extends MiniGame
     protected void gameHasFinished()
     {
     	System.out.println("Ende");
+    	EndDialog endDialog = new EndDialog();
+    	
+    	if(endDialog.submitted)
+    	{
+    		initGamePanel();
+    	}
     }
 
     @Override
@@ -145,7 +164,7 @@ public class MyMiniGame extends MiniGame
     @Override
     public String getName()
     {
-    	return "OOP Vorlesung #8 Testspiel";
+    	return "MMG - MarcusMiniGame";
     }
 
     @Override
