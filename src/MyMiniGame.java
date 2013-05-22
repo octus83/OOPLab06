@@ -3,6 +3,7 @@ import MiniGamePackage.MiniGame;
 public class MyMiniGame extends MiniGame 
 {
 
+	//Hallo
 	@Override
 	protected void computerMove(Action arg0) 
 	{
