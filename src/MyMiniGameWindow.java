@@ -8,6 +8,7 @@ import javax.swing.JToolBar;
 
 import MiniGamePackage.MiniGameObserver;
 
+@SuppressWarnings("serial")
 public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGameObserver
 {
 
