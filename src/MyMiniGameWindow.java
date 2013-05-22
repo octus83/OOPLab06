@@ -4,9 +4,13 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JToolBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
 import MiniGamePackage.MiniGameObserver;
 
 @SuppressWarnings("serial")
@@ -15,7 +19,12 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     JButton buttonUp = new JButton("UP!");
     JButton buttonDown = new JButton("DOWN!");
     JButton buttonGo = new JButton("GO!");
-    JButton buttonStartGame = new JButton("Start Game");
+
+    
+    private JMenuBar toolbar = new JMenuBar();
+    private JMenu mainMenu = new JMenu("Datei");
+    private JMenuItem menuItemNewGame = new JMenuItem("Neues Spiel");
+    private JMenuItem menuItemExit = new JMenuItem("Beenden");
 
     MyMiniGame theGame = new MyMiniGame();
 
@@ -25,17 +34,16 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 	
 		setLayout(new BorderLayout());
 	
-		JToolBar toolbar = new JToolBar();
-		add(toolbar, BorderLayout.NORTH);
-		//toolbar.add(buttonUp);
-		//toolbar.add(buttonDown);
-		//toolbar.add(buttonGo);
-		toolbar.add(buttonStartGame);
+		mainMenu.add(menuItemNewGame);
+		mainMenu.add(menuItemExit);
+		toolbar.add(mainMenu);
+		setJMenuBar(toolbar);
 	
 		buttonUp.addActionListener(this);
 		buttonDown.addActionListener(this);
 		buttonGo.addActionListener(this);
-		buttonStartGame.addActionListener(this);
+		menuItemNewGame.addActionListener(this);
+		menuItemExit.addActionListener(this);
 	
 		add(theGame, BorderLayout.CENTER);
 	
@@ -50,22 +58,26 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     @Override
     public void actionPerformed(ActionEvent ae)
     {
-	if (ae.getSource() == buttonUp)
-	{
-	    theGame.playerActionUp();
-	}
-	else if (ae.getSource() == buttonDown)
-	{
-	    theGame.playerActionDown();
-	}
-	else if (ae.getSource() == buttonGo)
-	{
-	    theGame.playerActionGo();
-	}
-	else if (ae.getSource() == buttonStartGame)
-	{
-	    theGame.newGame(1);
-	}
+		if (ae.getSource() == buttonUp)
+		{
+		    theGame.playerActionUp();
+		}
+		else if (ae.getSource() == buttonDown)
+		{
+		    theGame.playerActionDown();
+		}
+		else if (ae.getSource() == buttonGo)
+		{
+		    theGame.playerActionGo();
+		}
+		else if (ae.getSource() == menuItemNewGame)
+		{
+		    theGame.newGame(1);
+		}
+		else if (ae.getSource() == menuItemExit)
+		{
+		    System.exit(0);
+		}
     }
 
     @Override
