@@ -1,7 +1,6 @@
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -10,29 +9,50 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 
+/**
+ * 
+ * @author mpfingsten
+ *@version 1.0
+ *
+ *Provides an extended JDialog with GridLayout and OK-Button and optional Components
+ * _______________________
+ *|__________________- O X| WindowTitle
+ *|_______________________| Panel first
+ *|_______|_______|_______| Panel secondLeft, secondMiddle, secondRight
+ *|_______________________|	Panel third
+ *|_______________________| Panel fourth
+ *|___________|___________|	Panel fifthLeft, fifthRight
+ *
+ */
+
 @SuppressWarnings("serial")
 public abstract class MMGDialog extends JDialog implements ActionListener
 {
-	//Components Standart
-	protected String 		titleText 		= "MMGDialog";
-	protected JPanel 		header 			= new JPanel();
-	protected JLabel 		headerLabel 	= new JLabel();
-	protected JPanel		buttonContainer = new JPanel(new GridLayout(1,2));
-	protected JPanel		placeholder		= new JPanel();
-	protected JButton 		btnOk			= new JButton("Ok");
-	
+	//Dialog Panels	Standart
+	protected JPanel 		first 			= new JPanel();	
+	protected JPanel 		second			= new JPanel(new GridLayout(1,3));
+	protected JPanel 		secondLeft		= new JPanel();
+	protected JPanel 		secondMiddle	= new JPanel();
+	protected JPanel 		secondRight		= new JPanel();
+	protected JPanel		third			= new JPanel();
+	protected JPanel		fourth			= new JPanel();
+	protected JPanel		fifth 			= new JPanel(new GridLayout(1,2));
+	protected JPanel		fifthLeft		= new JPanel();
+	protected JButton 		fiftRightButton	= new JButton("Ok");
+		
 	//Components Options
-	protected JButton		btnIncr;
-	protected JButton 		btnDecr;
-	protected JPanel 		levelContainer;
-	protected JLabel		choosenLevel;
-	protected JPanel		colorHeader;
-	protected JLabel		colorHeaderLabel;
-	protected JPanel		colorContainer;
-	protected JRadioButton 	rbRed;
-	protected JRadioButton 	rbGreen;
-	protected JRadioButton 	rbBlue;
-	protected ButtonGroup 	colorRbGroup;
+	protected String 		titleText 		= "MMGDialog";
+	protected JLabel 		firstLabel;
+	protected JLabel 		secondLabel;
+	protected JButton		secondRightButton;
+	protected JButton 		secondLeftButton;	
+	protected JLabel		secondMiddleLabel;	
+	protected JLabel		thirdLabel;	
+	protected JLabel		fourthLabel;
+	protected JRadioButton 	radioButton1;
+	protected JRadioButton 	radioButton2;
+	protected JRadioButton 	radioButton3;
+	protected ButtonGroup 	buttonGroup;
 	
 	/**
 	 * Default Constructor
@@ -45,14 +65,14 @@ public abstract class MMGDialog extends JDialog implements ActionListener
 		setLayout(new GridLayout(5, 1));
 		setSize(200, 150);
 		setLocation(350, 350);
-		addComponentsAndListeners();		
+			
 	}
 	
 	protected boolean showDialog()
 	{
-		btnOk.addActionListener(new ActionListener()
-		{
-			
+		addComponentsAndListeners();	
+		fiftRightButton.addActionListener(new ActionListener()
+		{			
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -60,14 +80,13 @@ public abstract class MMGDialog extends JDialog implements ActionListener
 				
 			}
 		});
-		buttonContainer.add(placeholder);
-		buttonContainer.add(btnOk);
-		add(buttonContainer);
+		fifth.add(fifthLeft);
+		fifth.add(fiftRightButton);
+		add(fifth);
 		setVisible(true);
 		return true;
 	}
 	
-	public abstract void actionPerformed(ActionEvent ae);	
+	abstract public void actionPerformed(ActionEvent ae);	
 	abstract protected void addComponentsAndListeners();
-
 }
