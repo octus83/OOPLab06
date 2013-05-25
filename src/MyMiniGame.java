@@ -1,58 +1,55 @@
+import java.awt.Image;
+import java.awt.Toolkit;
+
 import MiniGamePackage.MiniGame;
 import MiniGamePackage.Sprite;
 
 @SuppressWarnings("serial")
 public class MyMiniGame extends MiniGame
 {
-    final int NR_OF_FIELDS = 8;
-    int[] fieldStatus = new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:player
+    final int NR_OF_FIELDS = 12;
+    private int[] fieldStatus = new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:player
 
-    Sprite[] fieldSprites = getSprites(0);
-    Sprite[] computerStoneSprites = getSprites(3);
-    Sprite[] playerStoneSprites = getSprites(4);
+    private Sprite[] fieldSprites = getSprites(0);
+    private Sprite[] computerStoneSprites = getSprites(3);
+    private Sprite[] playerStoneSprites = getSprites(4);
 
-    Sprite computerSprite = getSprite(1, 0);
-    Sprite playerSprite = getSprite(2, 0);
+    private Sprite computerSprite = getSprite(1, 0);
+    private Sprite playerSprite = getSprite(2, 0);
 
-    int playerPosition = 0;
-    int computerPosition = 0;
-    
-    int level;
-
+    private int playerPosition = 0;
+    private int computerPosition = 0;   
+    protected int level;
+    protected int playerScore;
+    protected int computerScore;
+ 
     public MyMiniGame()
-    {
-		initGamePanel();
-    }
-    
-    public void initGamePanel()
-    {
-    	getBackgroundPicture().paintRectangle(0, 0, 640, 640, -1, 122, 122, 122);
-    	
-		fieldSprites[0].paintRectangle(0, 0, 32, 32, -1, 255, 255, 255);
-		fieldSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 0);
-	
+    { 
+    	getBackgroundPicture().paintImage("MoorhuhnfeldMH1.jpg"); 	
+		fieldSprites[0].paintImage("huhn.jpg");
+		//fieldSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 0);
 		playerStoneSprites[0].paintEllipse(5, 5, 22, 22, -1, 255, 128, 0);
-		computerStoneSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 255);
-	
-		computerSprite.paintRectangle(5, 0, 22, 32, -1, 0, 0, 255);
-		playerSprite.paintRectangle(5, 0, 22, 32, -1, 255, 128, 0);
+		computerStoneSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 255);	
+		computerSprite.paintRectangle(5, 0, 22, 32, -1, 255, 0, 255);		
     }
    
     public void startGame()
     {
-    	EndDialog entryDialog = new EndDialog();
+    	StartDialog entryDialog = new StartDialog();
     	
-    	if(entryDialog.submitted)
+    	if(entryDialog.showDialog())
     	{
-    		level = entryDialog.selectedDifficulty;
+    		level = entryDialog.selectedDifficulty; 
     		newGame(entryDialog.selectedDifficulty);
+    		playerSprite.paintRectangle(5, 0, 22, 32, -1, entryDialog.playerColorR, entryDialog.playerColorG, entryDialog.playerColorB);
+    		//playerSprite.paintImage("Pistole.png");
     	}
     }
-    
+     
     @Override
     protected void initGame()
     {	
-		for (int i = 0; i < NR_OF_FIELDS; i++)
+		/*for (int i = 0; i < NR_OF_FIELDS; i++)
 		{
 		    fieldSprites[i].setPosition(304, i * 40 + 100);
 		    playerStoneSprites[i].setPosition(304, i * 40 + 100);
@@ -61,7 +58,7 @@ public class MyMiniGame extends MiniGame
 		    computerStoneSprites[i].dontShow();
 	
 		    fieldStatus[i] = 0;
-		}
+		}*/
 
 		playerPosition = 0;
 		computerPosition = 0;
@@ -71,7 +68,41 @@ public class MyMiniGame extends MiniGame
     @Override
     protected void gameHasStarted()
     {
+    	System.out.println("JETZT");
+    }
+    
+    protected void showRandomFieldSprites(int amount)
+    {
+    	for(int i = 0; i <= amount; i++)
+    	{
+    		fieldSprites[getRandomNr(0, NR_OF_FIELDS)].setPosition(304, getRandomNr(0, NR_OF_FIELDS) * 40 + 100);      	
+    	}
+    	//updatePositions();
+    }
+    
+    @Override
+    protected void gameHasFinished()
+    {
+    	hideAllSprites();
+    	EndDialog endDialog = new EndDialog();
+    	endDialog.setScoresandLevel(playerScore, computerScore, level);
+    	if(endDialog.showDialog())
+    	{
+    		newGame(endDialog.selectedDifficulty);
+    	} 
+    }
+    
+    private void hideAllSprites()
+    {
+    	computerSprite.dontShow();
+    	playerSprite.dontShow();
     	
+    	for (int i = 0; i < NR_OF_FIELDS; i++)
+		{
+		    fieldSprites[i].dontShow();
+		    playerStoneSprites[i].dontShow();
+		    computerStoneSprites[i].dontShow();
+		}
     }
 
     @Override
@@ -88,10 +119,19 @@ public class MyMiniGame extends MiniGame
 			    updatePositions();
 			    break;
 			case GO:
-			    fieldStatus[computerPosition] = 1;
-			    playerStoneSprites[computerPosition].dontShow();
-			    computerStoneSprites[computerPosition].show();
-		
+				if(fieldStatus[computerPosition] == 2)
+			    {
+					fieldStatus[computerPosition] = 0;
+					fieldSprites[computerPosition].setPosition(fieldSprites[computerPosition].getXPosition() + 20, fieldSprites[computerPosition].getYPosition());
+					fieldSprites[computerPosition].show();
+			    }
+				else
+				{
+					fieldStatus[computerPosition] = 1;
+					fieldSprites[computerPosition].setPosition(fieldSprites[computerPosition].getXPosition() + 20, fieldSprites[computerPosition].getYPosition());
+					//computerStoneSprites[computerPosition].show();
+				}
+			    playerStoneSprites[computerPosition].dontShow();		
 			    break;
 			default:
 			    break;
@@ -111,26 +151,24 @@ public class MyMiniGame extends MiniGame
 			    playerPosition = Math.max(playerPosition - 1, 0);
 			    updatePositions();
 			    break;
-			case GO:
-			    fieldStatus[playerPosition] = 2;
-			    playerStoneSprites[playerPosition].show();
+			case GO:							
+				/*if(fieldStatus[playerPosition] == 1)
+			    {
+					fieldStatus[playerPosition] = 0;
+					fieldSprites[playerPosition].setPosition(fieldSprites[playerPosition].getXPosition() - 20, fieldSprites[playerPosition].getYPosition());
+					fieldSprites[playerPosition].show();
+			    }
+				else
+				{
+					fieldStatus[playerPosition] = 2;
+					fieldSprites[playerPosition].setPosition(fieldSprites[playerPosition].getXPosition() - 20, fieldSprites[playerPosition].getYPosition());
+					//playerStoneSprites[playerPosition].show();
+				}*/
 			    computerStoneSprites[playerPosition].dontShow();
 			    break;
 			default:
 			    break;
 		}
-    }
-
-    @Override
-    protected void gameHasFinished()
-    {
-    	System.out.println("Ende");
-    	EndDialog endDialog = new EndDialog();
-    	
-    	if(endDialog.submitted)
-    	{
-    		initGamePanel();
-    	}
     }
 
     @Override
@@ -181,8 +219,7 @@ public class MyMiniGame extends MiniGame
 
     private void updatePositions()
     {
-    	computerSprite.setPosition(200, computerPosition * 40 + 100);
-    	playerSprite.setPosition(400, playerPosition * 40 + 100);
+    	computerSprite.setPosition(50, computerPosition * 40 + 100);
+    	playerSprite.setPosition(550, playerPosition * 40 + 100);
     }
-
 }

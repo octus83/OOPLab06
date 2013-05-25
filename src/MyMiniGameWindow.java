@@ -30,35 +30,26 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     private JMenu 					mainMenu = 			new JMenu("Datei");
     private JMenuItem 				menuItemNewGame = 	new JMenuItem("Neues Spiel");
     private JMenuItem 				menuItemExit = 		new JMenuItem("Beenden");
-    private JMenu 					optionsMenu = 		new JMenu("Optionen");
-    private JMenu 					menuItemDifficulty= new JMenu("Level wählen");
-    private ButtonGroup 			difficultyRbGroup = new ButtonGroup();
-    private JRadioButtonMenuItem[] 	rbDifficulty = 		new JRadioButtonMenuItem[10];
     private JPanel 					txtBox = 			new JPanel();
-    private JLabel 					txtBoxText = 		new JLabel();
-       
+    private JLabel 					txtBoxText = 		new JLabel();    
     private int 					selectedDifficulty = 1;
     
-    /**
-     * Default Constructor
-     */
     public MyMiniGameWindow()
     {
-		setSize(700, 700);
+		setSize(640, 700);
+		setLocation(100, 100);
 		setLayout(new BorderLayout());
 		setTitle(theGame.getName());
 		addComponentsAndListeners();	
-		theGame.registerMiniGameObserver(this);	
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
+		theGame.registerMiniGameObserver(this);			
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setVisible(true);
+		setVisible(true);	
     }
     
-    /**
-     * adds JComponents and theirs Listeners to this JFrame
-     */
     private void addComponentsAndListeners()
     {
+    	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
+    	
     	//MainMenu
     	mainMenu.add(menuItemNewGame);
     	mainMenu.addSeparator();
@@ -68,26 +59,6 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 		menuItemNewGame.addActionListener(this);
 		menuItemExit.addActionListener(this);
 		
-		//OptionsMenu
-		for (int i = 0; i < rbDifficulty.length; i++)
-		{
-			final int rbNo = i+1;
-			rbDifficulty[i] = new JRadioButtonMenuItem("Level "+(i+1));
-			difficultyRbGroup.add(rbDifficulty[i]);
-			menuItemDifficulty.add(rbDifficulty[i]);
-			
-			rbDifficulty[i].addActionListener(new ActionListener()
-			{				
-				@Override
-				public void actionPerformed(ActionEvent arg0)
-				{
-					selectedDifficulty = rbNo;					
-				}
-			});
-		}
-		rbDifficulty[selectedDifficulty-1].setSelected(true);
-		optionsMenu.add(menuItemDifficulty);
-		toolbar.add(optionsMenu);	
 		setJMenuBar(toolbar);
 		
 		//Infoboxt South	
@@ -99,16 +70,12 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 			
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
     @Override
     public void actionPerformed(ActionEvent ae)
     {
 		if (ae.getSource() == menuItemNewGame)
 		{
-		    theGame.newGame(selectedDifficulty);
+		    theGame.startGame();
 		}
 		else if (ae.getSource() == menuItemExit)
 		{
@@ -116,20 +83,21 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 		}
     }
 
-    /*
-     * (non-Javadoc)
-     * @see MiniGamePackage.MiniGameObserver#gameStatusUpdate(int, int, int, boolean)
-     */
     @Override
     public void gameStatusUpdate(int timeLeft, int playerScore, int computerScore, boolean isRunning)
     {
-    	txtBoxText.setText("Time left: " + timeLeft + " Player: " + playerScore + "  Computer: " + computerScore + " Still running:" + isRunning + "Level:" + selectedDifficulty);
+    	txtBoxText.setText("Time left: " + timeLeft + " Player: " + playerScore + "  Computer: " + computerScore + " Still running:" + isRunning + "Level:" + theGame.level);
+    	theGame.playerScore = playerScore;
+    	theGame.computerScore = computerScore;
+    	
+    	if(timeLeft%1000 <= 30)
+    	{
+    		theGame.showRandomFieldSprites(theGame.getRandomNr(1, 2));
+    		System.out.println("Ausgeführt");
+    	}
+    	
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.awt.KeyEventDispatcher#dispatchKeyEvent(java.awt.event.KeyEvent)
-     */
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent ke)
 	{
