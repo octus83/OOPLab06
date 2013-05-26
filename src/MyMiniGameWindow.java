@@ -4,15 +4,12 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-
-import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 
 import MiniGamePackage.MiniGameObserver;
 
@@ -61,9 +58,9 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 		
 		setJMenuBar(toolbar);
 		
-		//Infoboxt South	
+		//Infobox North
 		txtBox.add(txtBoxText);
-		add(txtBox, BorderLayout.SOUTH);
+		add(txtBox, BorderLayout.NORTH);
 		
 		//GamePanel Center
 		add(theGame, BorderLayout.CENTER);
@@ -87,15 +84,11 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     public void gameStatusUpdate(int timeLeft, int playerScore, int computerScore, boolean isRunning)
     {
     	txtBoxText.setText("Time left: " + timeLeft + " Player: " + playerScore + "  Computer: " + computerScore + " Still running:" + isRunning + "Level:" + theGame.level);
-    	theGame.playerScore = playerScore;
-    	theGame.computerScore = computerScore;
-    	
+   	
     	if(timeLeft%1000 <= 30)
     	{
     		theGame.showRandomFieldSprites(theGame.getRandomNr(1, 2));
-    		System.out.println("Ausgeführt");
-    	}
-    	
+    	}   	
     }
 
 	@Override
@@ -107,21 +100,22 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 			switch (ke.getKeyCode())
 			{
 				case KeyEvent.VK_SPACE:
+				{
 					theGame.playerActionGo();
-					return true;
-					
+					break;
+				}
+										
 				case KeyEvent.VK_DOWN:
+				{
 					theGame.playerActionDown();
-					return true;
+					break;
+				}
 					
 				case KeyEvent.VK_UP:
+				{
 					theGame.playerActionUp();
-					return true;
-					
-				case KeyEvent.VK_F11:
-					System.out.println("F11");
-					theGame.newGame(selectedDifficulty);
-					return true;
+					break;
+				}					
 			}			
 		}
 		return true;
