@@ -26,7 +26,7 @@ public class StartDialog extends MMGDialog
 		secondRightButton 	= new JButton("+");
 		secondLeftButton 	= new JButton("-");
 		second 				= new JPanel(new GridLayout(1,3));
-		secondMiddleLabel 	= new JLabel("1");
+		secondMiddleLabel 	= new JLabel(""+selectedDifficulty);
 		third				= new JPanel();
 		thirdLabel 			= new JLabel(COLORHEADERTEXT);
 		fourth 				= new JPanel(new GridLayout(1,3));

@@ -29,7 +29,6 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     private JMenuItem 				menuItemExit = 		new JMenuItem("Beenden");
     private JPanel 					txtBox = 			new JPanel();
     private JLabel 					txtBoxText = 		new JLabel();    
-    private int 					selectedDifficulty = 1;
     
     public MyMiniGameWindow()
     {
@@ -47,15 +46,13 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     {
     	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
     	
-    	//MainMenu
+    	//Toolbar
     	mainMenu.add(menuItemNewGame);
     	mainMenu.addSeparator();
 		mainMenu.add(menuItemExit);
-		toolbar.add(mainMenu);
-		
+		toolbar.add(mainMenu);		
 		menuItemNewGame.addActionListener(this);
-		menuItemExit.addActionListener(this);
-		
+		menuItemExit.addActionListener(this);		
 		setJMenuBar(toolbar);
 		
 		//Infobox North
@@ -63,8 +60,7 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 		add(txtBox, BorderLayout.NORTH);
 		
 		//GamePanel Center
-		add(theGame, BorderLayout.CENTER);
-			
+		add(theGame, BorderLayout.CENTER);			
     }
 
     @Override
@@ -83,9 +79,9 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
     @Override
     public void gameStatusUpdate(int timeLeft, int playerScore, int computerScore, boolean isRunning)
     {
-    	txtBoxText.setText("Time left: " + timeLeft + " Player: " + playerScore + "  Computer: " + computerScore + " Still running:" + isRunning + "Level:" + theGame.level);
+    	txtBoxText.setText("Time left: " + (int)timeLeft/1000 + " Player: " + playerScore + "  Computer: " + computerScore + " Level:" + theGame.level);
    	
-    	if(timeLeft%1000 <= 30)
+    	if(timeLeft%1000 <= 30 && timeLeft > 30)
     	{
     		theGame.showRandomFieldSprites(theGame.getRandomNr(1, 2));
     	}   	
@@ -103,14 +99,12 @@ public class MyMiniGameWindow extends JFrame implements ActionListener, MiniGame
 				{
 					theGame.playerActionGo();
 					break;
-				}
-										
+				}									
 				case KeyEvent.VK_DOWN:
 				{
 					theGame.playerActionDown();
 					break;
-				}
-					
+				}	
 				case KeyEvent.VK_UP:
 				{
 					theGame.playerActionUp();

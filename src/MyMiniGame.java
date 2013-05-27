@@ -1,4 +1,10 @@
-import java.util.Timer;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
 
 import MiniGamePackage.MiniGame;
 import MiniGamePackage.Sprite;
@@ -6,31 +12,39 @@ import MiniGamePackage.Sprite;
 @SuppressWarnings("serial")
 public class MyMiniGame extends MiniGame
 {
-    final int NR_OF_FIELDS = 12;
-    private int[] fieldStatus = new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:player
-    private boolean[] fieldVisibleStatus = new boolean[NR_OF_FIELDS]; // true=visible, false=hidden
+    private final int 	NR_OF_FIELDS 		= 12;
+    private int[] 		fieldStatus 		= new int[NR_OF_FIELDS]; // 0: not set, 1: computer , 2:player
+    private boolean[] 	fieldVisibleStatus 	= new boolean[NR_OF_FIELDS]; // true=visible, false=hidden
 
-    private Sprite[] fieldSprites = getSprites(0);
-    private Sprite[] computerStoneSprites = getSprites(3);
-    private Sprite[] playerStoneSprites = getSprites(4);
+    private Sprite[] 	birds 				= getSprites(0);
+    private Sprite 		computerGun 		= getSprite(1, 0);
+    private Sprite 		playerGun 			= getSprite(2, 0);
 
-    private Sprite computerSprite = getSprite(1, 0);
-    private Sprite playerSprite = getSprite(2, 0);
+    private int 		playerPosition = 0;
+    private int 		computerPosition = 0;   
+    protected int 		level;
+    
+    private Sequencer backgroundSound;
+    InputStream midiFile = MyMiniGame.class.getResourceAsStream("rmb.mid"); 
 
-    private int playerPosition = 0;
-    private int computerPosition = 0;   
-    protected int level;
-    protected int playerScore;
-    protected int computerScore;
  
     public MyMiniGame()
     { 
     	getBackgroundPicture().paintImage("MoorhuhnfeldMH1.jpg"); 	
-		fieldSprites[0].paintImage("huhn.png");
-		//fieldSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 0);
-		//playerStoneSprites[0].paintEllipse(5, 5, 22, 22, -1, 255, 128, 0);
-		//computerStoneSprites[0].paintEllipse(5, 5, 22, 22, -1, 0, 0, 255);	
-		computerSprite.paintRectangle(5, 0, 22, 32, -1, 255, 0, 255);		
+		birds[0].paintImage("huhn.png");	
+		computerGun.paintRectangle(5, 0, 22, 32, -1, 255, 0, 255);	
+		
+		try
+		{
+			backgroundSound = MidiSystem.getSequencer();
+			backgroundSound.setSequence( MidiSystem.getSequence(midiFile) );
+		} 
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
     }
    
     public void startGame()
@@ -39,24 +53,30 @@ public class MyMiniGame extends MiniGame
     	
     	if(entryDialog.showDialog())
     	{
+    		playerGun.paintRectangle(5, 0, 22, 32, -1, entryDialog.playerColorR, entryDialog.playerColorG, entryDialog.playerColorB);
     		level = entryDialog.selectedDifficulty; 
-    		newGame(level);
-    		playerSprite.paintRectangle(5, 0, 22, 32, -1, entryDialog.playerColorR, entryDialog.playerColorG, entryDialog.playerColorB);
-    		//playerSprite.paintImage("Pistole.png");
+    		newGame(level);   		
     	}
     }
      
     @Override
     protected void initGame()
-    {	
-		for (int i = 0; i < NR_OF_FIELDS; i++)
+    {		
+		try
 		{
-		    fieldSprites[i].setPosition(304, i * 40 + 100);
-		    //playerStoneSprites[i].setPosition(304, i * 40 + 100);
-		    //computerStoneSprites[i].setPosition(304, i * 40 + 100);
-		    //playerStoneSprites[i].dontShow();
-		    //computerStoneSprites[i].dontShow();
-	
+			backgroundSound.open();
+		}
+		catch (MidiUnavailableException e)
+		{
+				e.printStackTrace();
+		}
+
+    	hideFieldSprites();
+		for (int i = 0; i < NR_OF_FIELDS; i++)
+		{			
+		    birds[i].setPosition(304 + getRandomNr(-30, 30), i * 40 + 100);	
+		    birds[i].dontShow();
+		    fieldVisibleStatus[i] = false;
 		    fieldStatus[i] = 0;
 		}
 
@@ -68,7 +88,24 @@ public class MyMiniGame extends MiniGame
     @Override
     protected void gameHasStarted()
     {
+		backgroundSound.start(); 
     	hideFieldSprites();
+    }
+    
+    @Override
+    protected void gameHasFinished()
+    {
+    	hideAllSprites();
+    	EndDialog endDialog = new EndDialog();
+    	endDialog.setScoresandLevel(getCurrentPlayerScore(), getCurrentComputerScore(), level);
+    	
+    	if(endDialog.showDialog())
+    	{
+    		hideFieldSprites();
+    		level = endDialog.finishedLevel + 1;
+    		newGame(level);
+    		backgroundSound.stop();
+    	} 
     }
     
     protected void showRandomFieldSprites(int amount)
@@ -81,7 +118,7 @@ public class MyMiniGame extends MiniGame
     		
     		if(fieldStatus[rdNo] == 0)
     		{
-    			fieldSprites[rdNo].show();
+    			birds[rdNo].show();
         		fieldVisibleStatus[rdNo] = true;
     		}  		
     	}
@@ -89,8 +126,8 @@ public class MyMiniGame extends MiniGame
     
     private void hideAllSprites()
     {
-    	computerSprite.dontShow();
-    	playerSprite.dontShow();   	
+    	computerGun.dontShow();
+    	playerGun.dontShow();   	
     	hideFieldSprites();
     }
     
@@ -98,22 +135,9 @@ public class MyMiniGame extends MiniGame
     {
     	for (int i = 0; i < NR_OF_FIELDS; i++)
 		{
-		    fieldSprites[i].dontShow();
+		    birds[i].dontShow();
 		    fieldVisibleStatus[i] = false;
 		}
-    }
-    
-    @Override
-    protected void gameHasFinished()
-    {
-    	hideAllSprites();
-    	EndDialog endDialog = new EndDialog();
-    	endDialog.setScoresandLevel(getCurrentPlayerScore(), getCurrentComputerScore(), level);
-    	
-    	if(endDialog.showDialog())
-    	{
-    		newGame(endDialog.selectedDifficulty);
-    	} 
     }
     
     @Override
@@ -133,7 +157,7 @@ public class MyMiniGame extends MiniGame
 				if(fieldVisibleStatus[computerPosition])
 				{
 					fieldStatus[computerPosition] = 1;
-					fieldSprites[computerPosition].dontShow();
+					birds[computerPosition].dontShow();
 					fieldVisibleStatus[computerPosition] =  false;
 				}
 			    break;
@@ -159,7 +183,7 @@ public class MyMiniGame extends MiniGame
 				if(fieldVisibleStatus[playerPosition])
 				{
 					fieldStatus[playerPosition] = 2;
-					fieldSprites[playerPosition].dontShow();
+					birds[playerPosition].dontShow();
 					fieldVisibleStatus[playerPosition] = false;
 				}
 
@@ -217,7 +241,7 @@ public class MyMiniGame extends MiniGame
 
     private void updatePositions()
     {
-    	computerSprite.setPosition(50, computerPosition * 40 + 100);
-    	playerSprite.setPosition(550, playerPosition * 40 + 100);
+    	computerGun.setPosition(50, computerPosition * 40 + 100);
+    	playerGun.setPosition(550, playerPosition * 40 + 100);
     }
 }

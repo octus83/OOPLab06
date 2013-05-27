@@ -1,10 +1,7 @@
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-
 
 @SuppressWarnings("serial")
 public class EndDialog extends MMGDialog

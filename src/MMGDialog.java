@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-
 /**
  * 
  * @author mpfingsten
@@ -64,10 +63,14 @@ public abstract class MMGDialog extends JDialog implements ActionListener
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);	
 		setLayout(new GridLayout(5, 1));
 		setSize(200, 150);
-		setLocation(350, 350);
-			
+		setLocation(350, 350);			
 	}
 	
+	/**
+	 * Adds Components to Dialog
+	 * @see addComponentsAndListeners
+	 * @return true when 'OK'-button is hit
+	 */
 	protected boolean showDialog()
 	{
 		addComponentsAndListeners();	
@@ -76,8 +79,7 @@ public abstract class MMGDialog extends JDialog implements ActionListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				setVisible(false);
-				
+				setVisible(false);			
 			}
 		});
 		fifth.add(fifthLeft);
